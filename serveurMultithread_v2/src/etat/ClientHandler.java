@@ -38,7 +38,7 @@ class ClientHandler implements Runnable {
 			String received;
 
 			try {
-				System.out.println("Envoie de la clé public du serveur au client : " + this.serverPublicKey.substring(0,6)+ "...");
+				System.out.println("Envoie de la clé public du serveur au client (6 premiers caractères) : " + this.serverPublicKey.substring(0,6)+ "...");
 				// Envoie la clé public du serveur
 				dos.writeUTF(this.serverPublicKey);
 				// Récupère la clé public du client
@@ -53,9 +53,7 @@ class ClientHandler implements Runnable {
 					String message = SecurityManager.decrypt(received, this.serverPrivateKey );
 					System.out.println("Message de "+this.nom+" décrypté : " + message);
 					//écriture du message côté serveur
-					String messageEncrypt = SecurityManager.encrypt("Message de "+this.nom+" : "+ message,this.clientPublicKey);
-					System.out.println("Cryptage du message et envoie aux clients (6 premiers caractères) : " + messageEncrypt);
-					this.broadCast(messageEncrypt);
+					this.broadCast(message);
 
 					if (message.equals("logout")) {
 						this.isloggedin=false;
@@ -91,7 +89,11 @@ class ClientHandler implements Runnable {
 	    public void broadCast(String toSend) {
 	    	for (int i = 0; i < Server.getAr().size(); i++) {
 				try {
-					Server.getAr().get(i).dos.writeUTF(toSend);
+					ClientHandler client = Server.getAr().get(i);
+					System.out.println("Client "+client.nom+", clé : "+client.clientPublicKey.substring(0,6)+ "...");
+					String messageEncrypt = SecurityManager.encrypt("Message de "+this.nom+" : "+ toSend,client.clientPublicKey);
+					System.out.println("Cryptage et envoie du message pour le client "+client.nom+" (6 premiers caractères) : " + messageEncrypt.substring(0,6)+ "...");
+					client.dos.writeUTF(messageEncrypt);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

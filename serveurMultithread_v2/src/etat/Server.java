@@ -26,7 +26,7 @@ public class Server {
 	}
 
     public static void main(String[] args) throws IOException {
-        ServerSocket ss=new ServerSocket(8888, 0, InetAddress.getByName("localhost"));
+        ServerSocket ss=new ServerSocket(8888, 0, InetAddress.getByName("0.0.0.0"));
         System.out.println("running");
 		KeyManager keyManager = new KeyManager();
 		System.out.println("public : "+keyManager.getPublicKey());

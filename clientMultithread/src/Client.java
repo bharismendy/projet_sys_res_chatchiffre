@@ -68,7 +68,7 @@ public class Client {
 						String received = dis.readUTF();
 						System.out.println("Message crypté récupéré (6 premiers caractères) : " + received.substring(0,6)+ "...");
 						String msg=SecurityManager.decrypt(received, keys.getPrivateKey());
-						System.out.println("Message de décrypté : " + msg);
+						System.out.println("Message décrypté : " + msg);
 					} catch (IOException e) {
 						System.err.println("connection lost while reading !");
 						e.printStackTrace();
