@@ -1,3 +1,6 @@
+import Security.KeyManager;
+import Security.SecurityManager;
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -20,13 +23,19 @@ public class Client {
 		final DataInputStream dis=new DataInputStream(s.getInputStream());
 		final DataOutputStream dos=new DataOutputStream(s.getOutputStream());
 
+		KeyManager keys = new KeyManager();
+		// Récupération de la clé publique du serveur
+		String serverPublicKey = dis.readUTF();
+		// Envoie de la clé publique
+		dos.writeUTF(keys.getPublicKey());
+
 		// sendMessage thread
 		Thread sendMessage=new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
-					// read the message to deliver.
-					String msg=scn.nextLine();
+					// Encrypt the message to deliver.
+					String msg= SecurityManager.encrypt(scn.nextLine(), serverPublicKey);
 
 					try {
 						// write on the output stream
@@ -47,7 +56,7 @@ public class Client {
 				while(true) {
 					try {
 						// read the message sent to this client
-						String msg=dis.readUTF();
+						String msg=SecurityManager.decrypt(dis.readUTF(), keys.getPrivateKey());
 						System.out.println(msg);
 					} catch (IOException e) {
 						System.err.println("connection lost while reading !");

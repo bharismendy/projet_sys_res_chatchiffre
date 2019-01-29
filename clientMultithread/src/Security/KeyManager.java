@@ -1,4 +1,4 @@
-package KeyManager;
+package Security;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -18,9 +18,7 @@ public class KeyManager {
      */
     public KeyManager() {
         generatePublicKey();
-        System.out.println("public ok");
         generatePrivateKey();
-        System.out.println("private ok");
     }
 
     /**

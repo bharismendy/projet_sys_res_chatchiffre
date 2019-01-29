@@ -1,6 +1,6 @@
 package etat;
 
-import KeyManager.KeyManager;
+import Security.KeyManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -46,7 +46,7 @@ public class Server {
 
             // Create a new handler object for handling this request.
             System.out.println("Creating a new handler for this client...");
-            ClientHandler mtch=new ClientHandler(s, i, dis, dos);
+            ClientHandler mtch=new ClientHandler(s, i, dis, dos, keyManager.getPublicKey(), keyManager.getPrivateKey());
 
             // Create a new Thread with this object.
             Thread t=new Thread(mtch);
