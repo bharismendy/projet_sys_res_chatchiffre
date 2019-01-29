@@ -1,5 +1,7 @@
 package etat;
 
+import KeyManager.KeyManager;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -26,6 +28,9 @@ public class Server {
     public static void main(String[] args) throws IOException {
         ServerSocket ss=new ServerSocket(8888, 0, InetAddress.getByName("localhost"));
         System.out.println("running");
+		KeyManager keyManager = new KeyManager();
+		System.out.println("public : "+keyManager.getPublicKey());
+		System.out.println("private : "+keyManager.getPrivateKey());
         Socket s;
 
         // running infinite loop for getting
