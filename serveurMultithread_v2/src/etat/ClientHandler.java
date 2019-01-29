@@ -38,18 +38,26 @@ class ClientHandler implements Runnable {
 			String received;
 
 			try {
+				System.out.println("Envoie de la clé public du serveur au client : " + this.serverPublicKey.substring(0,6)+ "...");
 				// Envoie la clé public du serveur
 				dos.writeUTF(this.serverPublicKey);
 				// Récupère la clé public du client
+				System.out.println("Récupération de la clé public du client");
 				this.clientPublicKey = dis.readUTF();
+				System.out.println("Clé récupérée (6 premiers caractères) : " + this.clientPublicKey.substring(0,6)+ "...");
 				while(true) {
+					System.out.println("------------");
 					// receive the string
-					received = SecurityManager.decrypt(dis.readUTF(), this.serverPrivateKey );
+					received = dis.readUTF();
+					System.out.println("Message crypté récupéré (6 premiers caractères) : " + received.substring(0,6)+ "...");
+					String message = SecurityManager.decrypt(received, this.serverPrivateKey );
+					System.out.println("Message de "+this.nom+" décrypté : " + message);
 					//écriture du message côté serveur
-					System.out.println("Message de "+this.nom+" : "+ received);
-					this.broadCast(SecurityManager.encrypt("Message de "+this.nom+" : "+ received,this.clientPublicKey));
+					String messageEncrypt = SecurityManager.encrypt("Message de "+this.nom+" : "+ message,this.clientPublicKey);
+					System.out.println("Cryptage du message et envoie aux clients (6 premiers caractères) : " + messageEncrypt);
+					this.broadCast(messageEncrypt);
 
-					if (received.equals("logout")) {
+					if (message.equals("logout")) {
 						this.isloggedin=false;
 						this.dos.writeUTF(SecurityManager.encrypt("bye !",this.clientPublicKey));
 						this.s.close();

@@ -23,10 +23,15 @@ public class Client {
 		final DataInputStream dis=new DataInputStream(s.getInputStream());
 		final DataOutputStream dos=new DataOutputStream(s.getOutputStream());
 
-		KeyManager keys = new KeyManager();
+		final KeyManager keys = new KeyManager();
+		System.out.println("public : "+keys.getPublicKey());
+		System.out.println("private : "+keys.getPrivateKey());
 		// Récupération de la clé publique du serveur
-		String serverPublicKey = dis.readUTF();
+		System.out.println("Récupération de la clé public du serveur");
+		final String serverPublicKey = dis.readUTF();
+		System.out.println("Clé récupérée (6 premiers caractères) : " + serverPublicKey.substring(0,6)+ "...");
 		// Envoie de la clé publique
+		System.out.println("Envoie de ma clé public au serveur : " + keys.getPublicKey().substring(0,6)+ "...");
 		dos.writeUTF(keys.getPublicKey());
 
 		// sendMessage thread
@@ -35,11 +40,14 @@ public class Client {
 			public void run() {
 				while (true) {
 					// Encrypt the message to deliver.
-					String msg= SecurityManager.encrypt(scn.nextLine(), serverPublicKey);
+					String message = scn.nextLine();
+					System.out.println("Cryptage de : " + message);
+					String messageEncrypt= SecurityManager.encrypt(message, serverPublicKey);
+					System.out.println("Envoie du message crypté au serveur (6 premiers caractères) : " + messageEncrypt.substring(0,6)+ "...");
 
 					try {
 						// write on the output stream
-						dos.writeUTF(msg);
+						dos.writeUTF(messageEncrypt);
 					} catch (IOException e) {
 						System.err.println("connection lost while sending !");
 						e.printStackTrace();
@@ -55,9 +63,12 @@ public class Client {
 			public void run() {
 				while(true) {
 					try {
+						System.out.println("------------");
 						// read the message sent to this client
-						String msg=SecurityManager.decrypt(dis.readUTF(), keys.getPrivateKey());
-						System.out.println(msg);
+						String received = dis.readUTF();
+						System.out.println("Message crypté récupéré (6 premiers caractères) : " + received.substring(0,6)+ "...");
+						String msg=SecurityManager.decrypt(received, keys.getPrivateKey());
+						System.out.println("Message de décrypté : " + msg);
 					} catch (IOException e) {
 						System.err.println("connection lost while reading !");
 						e.printStackTrace();
@@ -70,7 +81,6 @@ public class Client {
 		try {
 			sendMessage.start();
 			readMessage.start();
-			System.err.println("read join");
 			readMessage.join();
 			s.close();
 			System.err.println("send interrupt");
