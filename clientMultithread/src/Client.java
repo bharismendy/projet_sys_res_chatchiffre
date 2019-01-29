@@ -14,7 +14,9 @@ public class Client {
 		final Scanner scn=new Scanner(System.in);
 
 		// getting localhost ip
-		InetAddress ip=InetAddress.getByName("localhost");
+		System.out.print("\nRENTRER L'IP DU SERVEUR (localhost est accepté) : ");
+		String ipUser = scn.nextLine();
+		InetAddress ip=InetAddress.getByName(ipUser);
 
 		// establish the connection
 		Socket s=new Socket(ip, ServerPort);
